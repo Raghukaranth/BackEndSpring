@@ -1,10 +1,15 @@
 package com.example.BackEndSpring.repos;
 
 import com.example.BackEndSpring.model.User;
-import com.example.BackEndSpring.model.UserDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
-public interface UserRepository extends JpaRepository<User, Long> {
-    User findByUserName(String username);
-    User save(UserDTO userDTO);
+import java.util.List;
+
+public interface UserRepository extends JpaRepository<User, Integer> {
+    @Query("from User where user_email=?1")
+    public List<User> findByEMAIL(String email);
+
+    @Query("from User where user_email=?1 and user_pass=?2")
+    public User findByUsernamePassword(String username,String password);
 }
