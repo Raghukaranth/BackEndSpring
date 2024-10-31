@@ -14,4 +14,9 @@ public class PaymentService {
     public Payment makePayment(Payment payment) {
         return paymentRepository.save(payment);
     }
+
+    public Payment checkStatus(Long id) throws Exception {
+        return paymentRepository.findById(id)
+                .orElseThrow(() -> new Exception("Payment not matching with " + id));
+    }
 }

@@ -15,9 +15,6 @@ public class Payment {
     @Column
     private long amount;
 
-    @Column
-    private String status;
-
     public long getId() {
         return Id;
     }
@@ -30,20 +27,11 @@ public class Payment {
         this.amount = amount;
     }
 
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
     @Override
     public String toString() {
         return "Payment{" +
                 "Id=" + Id +
                 ", amount=" + amount +
-                ", status='" + status + '\'' +
                 '}';
     }
 }
