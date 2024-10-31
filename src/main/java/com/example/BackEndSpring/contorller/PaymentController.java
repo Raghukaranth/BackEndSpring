@@ -35,6 +35,6 @@ public class PaymentController {
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
             log.info("Payment Failed");
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT); }
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR); }
     }
 }
