@@ -29,7 +29,7 @@ public class UserController {
         return "Welcome this end point is not secured";
     }
 
-    @GetMapping("/addNewUser")
+    @PostMapping("/addNewUser")
     public String addNewUser(@RequestBody UserInfo userInfo) {
         return service.addUser(userInfo);
     }
