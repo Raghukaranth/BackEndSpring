@@ -1,5 +1,9 @@
 package com.example.BackEndSpring.contorller;
 
+import com.example.BackEndSpring.model.AuthRequest;
+import com.example.BackEndSpring.model.UserInfo;
+import com.example.BackEndSpring.service.JwtService;
+import com.example.BackEndSpring.service.UserInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -15,7 +19,7 @@ public class UserController {
     private UserInfoService service;
 
     @Autowired
-    private JwtToken jwtToken;
+    private JwtService jwtService;
 
     @Autowired
     private AuthenticationManager authenticationManager;

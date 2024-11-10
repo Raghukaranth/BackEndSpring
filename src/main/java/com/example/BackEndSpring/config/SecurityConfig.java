@@ -1,5 +1,7 @@
 package com.example.BackEndSpring.config;
 
+import com.example.BackEndSpring.filter.JwtAuthFilter;
+import com.example.BackEndSpring.service.UserInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
