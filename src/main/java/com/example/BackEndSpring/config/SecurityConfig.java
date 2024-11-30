@@ -73,6 +73,7 @@ public class SecurityConfig {
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring().requestMatchers(new AntPathRequestMatcher("/h2-ui/**"))
                 .requestMatchers("/payment/**")
-                .requestMatchers("/task/**");
+                .requestMatchers("/task/**")
+                .requestMatchers("/users/**");
     }
 }
