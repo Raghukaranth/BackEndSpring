@@ -75,6 +75,7 @@ public class SecurityConfig {
                 .requestMatchers("/payment/**")
                 .requestMatchers("/task/**")
                 .requestMatchers("/users/**")
-                .requestMatchers("/url/**");
+                .requestMatchers("/url/**")
+                .requestMatchers("/loginUser/**");
     }
 }
