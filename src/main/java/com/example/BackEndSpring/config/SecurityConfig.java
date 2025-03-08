@@ -74,6 +74,7 @@ public class SecurityConfig {
         return (web) -> web.ignoring().requestMatchers(new AntPathRequestMatcher("/h2-ui/**"))
                 .requestMatchers("/payment/**")
                 .requestMatchers("/task/**")
-                .requestMatchers("/users/**");
+                .requestMatchers("/users/**")
+                .requestMatchers("/userName/**");
     }
 }
