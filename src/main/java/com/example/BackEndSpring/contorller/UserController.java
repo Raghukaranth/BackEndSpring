@@ -1,15 +1,11 @@
 package com.example.BackEndSpring.contorller;
 
-import com.example.BackEndSpring.model.AuthRequest;
 import com.example.BackEndSpring.model.UserInfo;
 import com.example.BackEndSpring.service.JwtService;
 import com.example.BackEndSpring.service.UserInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

@@ -1,6 +1,5 @@
 package com.example.BackEndSpring.filter;
 
-import com.example.BackEndSpring.model.UserInfo;
 import com.example.BackEndSpring.service.JwtService;
 import com.example.BackEndSpring.service.UserInfoService;
 import jakarta.servlet.FilterChain;

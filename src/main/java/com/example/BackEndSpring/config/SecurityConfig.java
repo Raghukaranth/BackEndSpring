@@ -38,7 +38,7 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())// Disable CSRF for stateless APIs
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/welcome", "/auth/addNewUser", "/auth/generateToken").permitAll()
+                        .requestMatchers("/auth/welcome", "/auth/addNewUser", "/auth/generateToken", "/task/**", "/api/**").permitAll()
                         .requestMatchers("/auth/user/**").hasAuthority("ROLE_USER")
                         .requestMatchers("/auth/admin/**").hasAuthority("ROLE_ADMIN")
                         .anyRequest().authenticated() // Protect all other endpoints
@@ -69,13 +69,36 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(new AntPathRequestMatcher("/h2-ui/**")).permitAll()
+                        .requestMatchers("/payment/**").permitAll()
+                        .requestMatchers("/users/**").permitAll()
+                        .requestMatchers("/loginUser/**").permitAll()
+                        .requestMatchers("/task/**").permitAll()
+                        .requestMatchers("/api/**").permitAll()
+                        .anyRequest().authenticated()
+                )
+                .csrf(csrf -> csrf
+                        .ignoringRequestMatchers(
+                                new AntPathRequestMatcher("/h2-ui/**"),
+                                new AntPathRequestMatcher("/payment/**"),
+                                new AntPathRequestMatcher("/users/**"),
+                                new AntPathRequestMatcher("/loginUser/**"),
+                                new AntPathRequestMatcher("/task/**"),
+                                new AntPathRequestMatcher("/api/**")
+                        )
+                )
+                .headers(headers -> headers
+                        .frameOptions(frame -> frame.sameOrigin())  // Important for H2 console frame rendering
+                );
+
+        return http.build();
+    }
+
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring().requestMatchers(new AntPathRequestMatcher("/h2-ui/**"))
-                .requestMatchers("/api/**")
-                .requestMatchers("/payment/**")
-                .requestMatchers("/task/**")
-                .requestMatchers("/users/**")
-                .requestMatchers("/loginUser/**");
+        return (web) -> web.ignoring().requestMatchers(new AntPathRequestMatcher("/h2-ui/**"));
     }
 }
