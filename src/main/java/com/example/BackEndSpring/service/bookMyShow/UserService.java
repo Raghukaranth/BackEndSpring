@@ -1,13 +1,13 @@
 package com.example.BackEndSpring.service.bookMyShow;
 
 import com.example.BackEndSpring.model.bookMyShow.User;
-import com.example.BackEndSpring.repository.bookMyShow.UserBMSRepository;
+import com.example.BackEndSpring.repository.bookMyShow.BMSUserRepository;
 
 import java.util.List;
 import java.util.Optional;
 
 public class UserService {
-    UserBMSRepository userRepository;
+    BMSUserRepository userRepository;
 
     public User saveUser(User user) {
         return userRepository.save(user);
