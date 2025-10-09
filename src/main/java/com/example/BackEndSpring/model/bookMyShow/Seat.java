@@ -19,6 +19,8 @@ public class Seat {
     private SeatType seatType;
 
     private boolean isBooked;
+    private SeatStatus status;
+    private Long lockedByUserId;
 
     @ManyToOne
     @JoinColumn(name = "screen_id")

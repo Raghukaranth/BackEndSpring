@@ -1,13 +1,13 @@
 package com.example.BackEndSpring.service.bookMyShow;
 
 import com.example.BackEndSpring.model.bookMyShow.User;
-import com.example.BackEndSpring.repository.bookMyShow.UserRepository;
+import com.example.BackEndSpring.repository.bookMyShow.UserBMSRepository;
 
 import java.util.List;
 import java.util.Optional;
 
 public class UserService {
-    UserRepository userRepository;
+    UserBMSRepository userRepository;
 
     public User saveUser(User user) {
         return userRepository.save(user);
@@ -17,13 +17,13 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public Optional<User> getUserById(Long id) {
-        return userRepository.findById(id);
+    public Optional<User> getUserById(String phoneNumber) {
+        return userRepository.findById(phoneNumber);
     }
 
-    public User updateUser(Long id, User userDetails) {
-        User user = userRepository.findById(id).orElseThrow(
-                () -> new RuntimeException("User not found With Id" + id));
+    public User updateUser(String phoneNumber, User userDetails) {
+        User user = userRepository.findById(phoneNumber).orElseThrow(
+                () -> new RuntimeException("User not found With Id" + phoneNumber));
 
         user.setName(userDetails.getName());
         user.setEmail(userDetails.getEmail());
@@ -32,9 +32,9 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public void deleteUser(Long id) {
-        User user = userRepository.findById(id).orElseThrow(
-                () -> new RuntimeException("User not found With Id" + id));
+    public void deleteUser(String phoneNumber) {
+        User user = userRepository.findById(phoneNumber).orElseThrow(
+                () -> new RuntimeException("User not found With Id" + phoneNumber));
 
         userRepository.delete(user);
     }
