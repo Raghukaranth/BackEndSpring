@@ -40,7 +40,7 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/auth/welcome", "/auth/addNewUser", "/auth/generateToken",
                                 "/task/**", "/api/**", "/mybms/**", "/h2-ui/**", "/payment/**",
-                                "/users/**", "/loginUser/**", "/mybms/**"
+                                "/users/**", "/loginUser/**"
                         ).permitAll()
                         .requestMatchers("/auth/user/**").hasAuthority("ROLE_USER")
                         .requestMatchers("/auth/admin/**").hasAuthority("ROLE_ADMIN")

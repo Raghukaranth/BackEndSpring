@@ -2,11 +2,15 @@ package com.example.BackEndSpring.service.bookMyShow;
 
 import com.example.BackEndSpring.model.bookMyShow.User;
 import com.example.BackEndSpring.repository.bookMyShow.BMSUserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
+@Service
 public class UserService {
+    @Autowired
     BMSUserRepository userRepository;
 
     public User saveUser(User user) {
