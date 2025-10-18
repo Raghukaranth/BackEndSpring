@@ -24,7 +24,7 @@
             Optional<Seat> seatOpt = seatRepository.findById(seatId);
             if(seatOpt.isPresent()) {
                 Seat seat = seatOpt.get();
-                if(seat.getStatus() == SeatStatus.AVAILABLE) {
+                if(seat.getStatus() == null || seat.getStatus() == SeatStatus.AVAILABLE) {
                     seat.setStatus(SeatStatus.LOCKED);
                     seat.setLockedByUserId(userId);
                     seatRepository.save(seat);
