@@ -41,7 +41,7 @@ public class SeatController {
         }
     }
 
-    @DeleteMappingat("/release")
+    @DeleteMapping("/release")
     public ResponseEntity<String> releaseSeat(@RequestBody List<Long> seatId, @RequestParam Long userId) {
         seatService.releaseSeats(seatId, userId);
         return new ResponseEntity<>("Seats released successfully for the user: " + userId, HttpStatus.OK);
