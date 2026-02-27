@@ -39,8 +39,14 @@ public class TaskController {
     @DeleteMapping("/deleteTaskById/{id}")
     public ResponseEntity<HttpStatus> deleteTaskById(@PathVariable("id") Long id) {
         try {
-            taskTrackerService.deleteTaskById(id);
-            return new ResponseEntity<>(HttpStatus.OK);
+            boolean isDeleted = taskTrackerService.deleteTaskById(id);
+
+            if(isDeleted) {
+                return new ResponseEntity<>(HttpStatus.OK);
+            }
+            else {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
         } catch (Exception e) { return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR); }
     }
 }

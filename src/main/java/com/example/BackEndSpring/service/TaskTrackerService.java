@@ -31,8 +31,12 @@ public class TaskTrackerService {
         return taskTracker;
     }
 
-    public void deleteTaskById(long id) {
+    public boolean deleteTaskById(long id) {
+        if (!taskRepository.existsById(id)) {
+            return false;
+        }
         taskRepository.deleteById(id);
+        return true;
     }
 
 }
