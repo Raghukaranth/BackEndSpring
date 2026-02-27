@@ -1,5 +1,6 @@
 package com.example.BackEndSpring.model.bookMyShow;
 
+import com.example.BackEndSpring.dto.MovieDTO;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
