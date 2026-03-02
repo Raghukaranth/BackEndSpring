@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Task Management System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .register-container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .register-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .register-header h1 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .register-header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e1e1;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .alert {
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .alert-error {
+            background-color: #fee;
+            color: #c33;
+            border: 1px solid #fcc;
+        }
+
+        .alert-success {
+            background-color: #efe;
+            color: #3c3;
+            border: 1px solid #cfc;
+        }
+
+        .alert-info {
+            background-color: #e3f2fd;
+            color: #1976d2;
+            border: 1px solid #90caf9;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .login-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<div class="register-container">
+    <div class="register-header">
+        <h1>Create Account</h1>
+        <p>Register for a new account</p>
+    </div>
+
+    <div id="loadingMessage" class="alert alert-info" style="display: none;">Loading CSRF token...</div>
+    <div id="errorMessage" class="alert alert-error" style="display: none;"></div>
+    <div id="successMessage" class="alert alert-success" style="display: none;"></div>
+
+    <form id="registerForm">
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" required autofocus>
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required>
+        </div>
+
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required minlength="6">
+        </div>
+
+        <div class="form-group">
+            <label for="confirmPassword">Confirm Password</label>
+            <input type="password" id="confirmPassword" name="confirmPassword" required>
+        </div>
+
+        <button type="submit" class="btn" id="registerBtn">Register</button>
+    </form>
+
+    <div class="login-link">
+        Already have an account? <a href="/login.html">Login here</a>
+    </div>
+</div>
+
+<script>
+    let csrfToken = null;
+    let csrfHeaderName = 'X-XSRF-TOKEN';
+
+    // Function to get CSRF token from cookie
+    function getCsrfTokenFromCookie() {
+        const name = 'XSRF-TOKEN=';
+        const decodedCookie = decodeURIComponent(document.cookie);
+        const cookieArray = decodedCookie.split(';');
+        for(let i = 0; i < cookieArray.length; i++) {
+            let cookie = cookieArray[i].trim();
+            if (cookie.indexOf(name) === 0) {
+                return cookie.substring(name.length, cookie.length);
+            }
+        }
+        return null;
+    }
+
+    // Fetch CSRF token from API endpoint
+    async function fetchCsrfToken() {
+        const loadingDiv = document.getElementById('loadingMessage');
+        loadingDiv.style.display = 'block';
+
+        try {
+            console.log('Fetching CSRF token from API...');
+            const response = await fetch('/api/csrf-token', {
+                method: 'GET',
+                credentials: 'include',
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                csrfToken = data.token;
+                csrfHeaderName = data.headerName || 'X-XSRF-TOKEN';
+                console.log('✓ CSRF token fetched from API successfully');
+                loadingDiv.style.display = 'none';
+                return csrfToken;
+            } else {
+                console.error('Failed to fetch CSRF token from API, status:', response.status);
+            }
+        } catch (error) {
+            console.error('Error fetching CSRF token from API:', error);
+        }
+
+        // Fallback: try to get from cookie
+        console.log('Attempting to get CSRF token from cookie...');
+        csrfToken = getCsrfTokenFromCookie();
+
+        if (csrfToken) {
+            console.log('✓ CSRF token found in cookie');
+            loadingDiv.style.display = 'none';
+        } else {
+            console.error('✗ CSRF token not found in cookie either');
+            loadingDiv.style.display = 'none';
+        }
+
+        return csrfToken;
+    }
+
+    // Load CSRF token on page load
+    window.addEventListener('DOMContentLoaded', async function() {
+        await fetchCsrfToken();
+
+        if (!csrfToken) {
+            console.warn('Warning: CSRF token could not be loaded on page load');
+        }
+    });
+
+    document.getElementById('registerForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const username = document.getElementById('username').value;
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+
+        const errorDiv = document.getElementById('errorMessage');
+        const successDiv = document.getElementById('successMessage');
+        const registerBtn = document.getElementById('registerBtn');
+
+        // Hide previous messages
+        errorDiv.style.display = 'none';
+        successDiv.style.display = 'none';
+
+        // Validate passwords match
+        if (password !== confirmPassword) {
+            errorDiv.textContent = 'Passwords do not match';
+            errorDiv.style.display = 'block';
+            return;
+        }
+
+        // Disable button during submission
+        registerBtn.disabled = true;
+        registerBtn.textContent = 'Registering...';
+
+        try {
+            // Ensure we have a CSRF token
+            if (!csrfToken) {
+                console.log('No CSRF token available, fetching now...');
+                await fetchCsrfToken();
+            }
+
+            // Try one more time to get from cookie if API failed
+            if (!csrfToken) {
+                csrfToken = getCsrfTokenFromCookie();
+            }
+
+            if (!csrfToken) {
+                throw new Error('CSRF token not found. Please refresh the page and try again.');
+            }
+
+            console.log('Sending registration request...');
+            console.log('Using CSRF header:', csrfHeaderName);
+
+            const headers = {
+                'Content-Type': 'application/json'
+            };
+            headers[csrfHeaderName] = csrfToken;
+
+            const response = await fetch('/api/register', {
+                method: 'POST',
+                headers: headers,
+                credentials: 'include',
+                body: JSON.stringify({ username, password, email })
+            });
+
+            console.log('Response status:', response.status);
+
+            let data;
+            const contentType = response.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
+                data = await response.json();
+            } else {
+                const text = await response.text();
+                console.log('Non-JSON response:', text);
+                data = { error: `Server error (${response.status})` };
+            }
+
+            if (response.ok) {
+                successDiv.textContent = 'Registration successful! Redirecting to login...';
+                successDiv.style.display = 'block';
+
+                setTimeout(() => {
+                    window.location.href = '/login.html?registered=true';
+                }, 2000);
+            } else {
+                errorDiv.textContent = data.error || `Registration failed (Status: ${response.status})`;
+                errorDiv.style.display = 'block';
+                registerBtn.disabled = false;
+                registerBtn.textContent = 'Register';
+            }
+        } catch (error) {
+            console.error('Registration error:', error);
+            errorDiv.textContent = error.message || 'An error occurred. Please try again.';
+            errorDiv.style.display = 'block';
+            registerBtn.disabled = false;
+            registerBtn.textContent = 'Register';
+        }
+    });
+</script>
+</body>
+</html>
