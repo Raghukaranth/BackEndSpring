@@ -8,24 +8,26 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @RequestMapping("/task")
 public class TaskController {
+
     @Autowired
     TaskRepository taskRepository;
 
     @Autowired
     TaskTrackerService taskTrackerService;
 
-
+    // REST API endpoints only
     @GetMapping("/getAllTasks")
     public ResponseEntity<List<TaskTracker>> getAllTasks() {
         try {
             return taskTrackerService.getAllTasks();
-        } catch (Exception e) { return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR); }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PostMapping("/addTask")
@@ -33,7 +35,9 @@ public class TaskController {
         try {
             TaskTracker taskTrackerObj = taskTrackerService.addTask(taskTracker);
             return new ResponseEntity<>(taskTrackerObj, HttpStatus.CREATED);
-        } catch (Exception e) { return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR); }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @DeleteMapping("/deleteTaskById/{id}")
@@ -47,6 +51,38 @@ public class TaskController {
             else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
-        } catch (Exception e) { return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR); }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/getTaskById/{id}")
+    public ResponseEntity<TaskTracker> getTaskById(@PathVariable("id") Long id) {
+        try {
+            TaskTracker task = taskRepository.findById(id).orElse(null);
+            if (task != null) {
+                return new ResponseEntity<>(task, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PutMapping("/updateTask/{id}")
+    public ResponseEntity<TaskTracker> updateTask(@PathVariable("id") Long id, @RequestBody TaskTracker taskTracker) {
+        try {
+            TaskTracker existingTask = taskRepository.findById(id).orElse(null);
+            if (existingTask != null) {
+                existingTask.setTask(taskTracker.getTask());
+                TaskTracker updatedTask = taskRepository.save(existingTask);
+                return new ResponseEntity<>(updatedTask, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

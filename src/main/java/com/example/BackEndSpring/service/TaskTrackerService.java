@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class TaskTrackerService {
@@ -23,12 +24,10 @@ public class TaskTrackerService {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
         return new ResponseEntity<>(taskTrackerList, HttpStatus.OK);
-
     }
 
     public TaskTracker addTask(TaskTracker taskTracker) {
-        taskRepository.save(taskTracker);
-        return taskTracker;
+        return taskRepository.save(taskTracker);
     }
 
     public boolean deleteTaskById(long id) {
@@ -39,4 +38,17 @@ public class TaskTrackerService {
         return true;
     }
 
+    public Optional<TaskTracker> getTaskById(long id) {
+        return taskRepository.findById(id);
+    }
+
+    public TaskTracker updateTask(long id, TaskTracker taskTracker) {
+        Optional<TaskTracker> existingTask = taskRepository.findById(id);
+        if (existingTask.isPresent()) {
+            TaskTracker task = existingTask.get();
+            task.setTask(taskTracker.getTask());
+            return taskRepository.save(task);
+        }
+        return null;
+    }
 }

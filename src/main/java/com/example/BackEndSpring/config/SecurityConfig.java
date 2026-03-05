@@ -12,8 +12,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
-import org.springframework.security.web.csrf.CsrfTokenRequestHandler;
-import org.springframework.security.web.csrf.XorCsrfTokenRequestAttributeHandler;
 
 @Configuration
 @EnableWebSecurity
@@ -46,6 +44,7 @@ public class SecurityConfig {
                         .requestMatchers("/", "/login", "/login.html", "/register", "/register.html",
                                 "/css/**", "/js/**", "/h2-ui/**",
                                 "/api/register", "/api/csrf-token").permitAll()
+                        .requestMatchers("/tasks.html", "/create-task.html", "/task/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form

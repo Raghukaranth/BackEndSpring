@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Tasks - Task Management System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar h1 {
+            font-size: 24px;
+        }
+
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .username {
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .btn-logout {
+            padding: 8px 20px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid white;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-logout:hover {
+            background: white;
+            color: #667eea;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .header-section h2 {
+            color: #333;
+            font-size: 28px;
+        }
+
+        .btn-primary {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: transform 0.2s;
+            display: inline-block;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+        }
+
+        .task-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.2s;
+        }
+
+        .task-card:hover {
+            transform: translateX(5px);
+        }
+
+        .task-content {
+            flex: 1;
+        }
+
+        .task-text {
+            color: #333;
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .task-id {
+            color: #999;
+            font-size: 14px;
+        }
+
+        .task-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-edit {
+            padding: 8px 16px;
+            background: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn-delete {
+            padding: 8px 16px;
+            background: #f44336;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn-edit:hover, .btn-delete:hover {
+            opacity: 0.8;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        .empty-state h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .empty-state p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .alert {
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .alert-success {
+            background-color: #efe;
+            color: #3c3;
+            border: 1px solid #cfc;
+        }
+
+        .alert-error {
+            background-color: #fee;
+            color: #c33;
+            border: 1px solid #fcc;
+        }
+
+        .btn-back {
+            padding: 8px 16px;
+            background: #666;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 14px;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .btn-back:hover {
+            background: #555;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar">
+    <h1>Task Management System</h1>
+    <div class="navbar-right">
+        <span class="username">👤 <span id="usernameDisplay">User</span></span>
+        <button onclick="handleLogout()" class="btn-logout">Logout</button>
+    </div>
+</nav>
+
+<div class="container">
+    <a href="/home" class="btn-back">← Back to Dashboard</a>
+
+    <div class="header-section">
+        <h2>My Tasks</h2>
+        <a href="/create-task.html" class="btn-primary">+ Create New Task</a>
+    </div>
+
+    <div id="alertMessage" class="alert alert-success" style="display: none;"></div>
+    <div id="errorMessage" class="alert alert-error" style="display: none;"></div>
+
+    <div id="tasksList">
+        <!-- Tasks will be loaded here -->
+    </div>
+</div>
+
+<!-- Hidden logout form -->
+<form id="logoutForm" action="/logout" method="post" style="display: none;">
+    <input type="hidden" name="_csrf" id="csrfToken">
+</form>
+
+<script>
+    // Function to get CSRF token from cookie
+    function getCsrfToken() {
+        const name = 'XSRF-TOKEN=';
+        const decodedCookie = decodeURIComponent(document.cookie);
+        const cookieArray = decodedCookie.split(';');
+        for(let i = 0; i < cookieArray.length; i++) {
+            let cookie = cookieArray[i].trim();
+            if (cookie.indexOf(name) === 0) {
+                return cookie.substring(name.length, cookie.length);
+            }
+        }
+        return null;
+    }
+
+    // Handle logout
+    function handleLogout() {
+        const csrfToken = getCsrfToken();
+        if (csrfToken) {
+            document.getElementById('csrfToken').value = csrfToken;
+            document.getElementById('logoutForm').submit();
+        }
+    }
+
+    // Load current user
+    async function loadCurrentUser() {
+        try {
+            const response = await fetch('/api/current-user', {
+                credentials: 'include'
+            });
+            if (response.ok) {
+                const data = await response.json();
+                document.getElementById('usernameDisplay').textContent = data.username;
+            }
+        } catch (error) {
+            console.error('Error loading user:', error);
+        }
+    }
+
+    // Load tasks on page load
+    async function loadTasks() {
+        try {
+            const response = await fetch('/task/getAllTasks', {
+                method: 'GET',
+                credentials: 'include'
+            });
+
+            if (response.ok) {
+                const tasks = await response.json();
+                displayTasks(tasks);
+            } else if (response.status === 204) {
+                displayEmptyState();
+            } else {
+                showError('Failed to load tasks');
+            }
+        } catch (error) {
+            console.error('Error loading tasks:', error);
+            showError('Error loading tasks');
+        }
+    }
+
+    function displayTasks(tasks) {
+        const tasksList = document.getElementById('tasksList');
+
+        if (tasks.length === 0) {
+            displayEmptyState();
+            return;
+        }
+
+        tasksList.innerHTML = tasks.map(task => `
+            <div class="task-card">
+                <div class="task-content">
+                    <div class="task-text">${escapeHtml(task.task)}</div>
+                    <div class="task-id">Task ID: ${task.id}</div>
+                </div>
+                <div class="task-actions">
+                    <button class="btn-edit" onclick="editTask(${task.id}, '${escapeHtml(task.task).replace(/'/g, "\\'")}')">Edit</button>
+                    <button class="btn-delete" onclick="deleteTask(${task.id})">Delete</button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function displayEmptyState() {
+        const tasksList = document.getElementById('tasksList');
+        tasksList.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-state-icon">📋</div>
+                <h3>No Tasks Yet</h3>
+                <p>Create your first task to get started!</p>
+                <a href="/create-task.html" class="btn-primary">Create Task</a>
+            </div>
+        `;
+    }
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    function showSuccess(message) {
+        const alertDiv = document.getElementById('alertMessage');
+        alertDiv.textContent = message;
+        alertDiv.style.display = 'block';
+        setTimeout(() => {
+            alertDiv.style.display = 'none';
+        }, 3000);
+    }
+
+    function showError(message) {
+        const errorDiv = document.getElementById('errorMessage');
+        errorDiv.textContent = message;
+        errorDiv.style.display = 'block';
+        setTimeout(() => {
+            errorDiv.style.display = 'none';
+        }, 3000);
+    }
+
+    async function deleteTask(taskId) {
+        if (!confirm('Are you sure you want to delete this task?')) {
+            return;
+        }
+
+        try {
+            const csrfToken = getCsrfToken();
+            const response = await fetch(`/task/deleteTaskById/${taskId}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-XSRF-TOKEN': csrfToken
+                },
+                credentials: 'include'
+            });
+
+            if (response.ok) {
+                showSuccess('Task deleted successfully!');
+                loadTasks();
+            } else {
+                showError('Failed to delete task');
+            }
+        } catch (error) {
+            console.error('Error deleting task:', error);
+            showError('Error deleting task');
+        }
+    }
+
+    function editTask(taskId, currentTask) {
+        const newTask = prompt('Enter new task description:', currentTask);
+        if (newTask && newTask.trim() && newTask.trim() !== currentTask) {
+            updateTask(taskId, newTask.trim());
+        }
+    }
+
+    async function updateTask(taskId, taskText) {
+        try {
+            const csrfToken = getCsrfToken();
+            const response = await fetch(`/task/updateTask/${taskId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-XSRF-TOKEN': csrfToken
+                },
+                credentials: 'include',
+                body: JSON.stringify({ task: taskText })
+            });
+
+            if (response.ok) {
+                showSuccess('Task updated successfully!');
+                loadTasks();
+            } else {
+                showError('Failed to update task');
+            }
+        } catch (error) {
+            console.error('Error updating task:', error);
+            showError('Error updating task');
+        }
+    }
+
+    // Load data when page loads
+    window.addEventListener('DOMContentLoaded', function() {
+        loadCurrentUser();
+        loadTasks();
+    });
+</script>
+</body>
+</html>
