@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - Task Management System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar h1 {
+            font-size: 24px;
+        }
+
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .username {
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .btn-logout {
+            padding: 8px 20px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid white;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .btn-logout:hover {
+            background: white;
+            color: #667eea;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .welcome-card {
+            background: white;
+            border-radius: 10px;
+            padding: 40px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .welcome-card h2 {
+            color: #333;
+            font-size: 32px;
+            margin-bottom: 15px;
+        }
+
+        .welcome-card p {
+            color: #666;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .dashboard-card {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .dashboard-card h3 {
+            color: #667eea;
+            font-size: 20px;
+            margin-bottom: 15px;
+        }
+
+        .dashboard-card p {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .dashboard-card .btn-primary {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+
+        .dashboard-card .btn-primary:hover {
+            transform: translateY(-2px);
+        }
+x
+        .icon {
+            font-size: 40px;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar">
+    <h1>Task Management System</h1>
+    <div class="navbar-right">
+        <span class="username">👤 <span th:text="${username}">User</span></span>
+        <button onclick="handleLogout()" class="btn-logout" id="logoutBtn">Logout</button>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="welcome-card">
+        <h2>Welcome, <span th:text="${username}">User</span>! 🎉</h2>
+        <p>You have successfully logged in to the Task Management System</p>
+    </div>
+
+    <div class="dashboard-grid">
+        <div class="dashboard-card">
+            <div class="icon">📋</div>
+            <h3>My Tasks</h3>
+            <p>View and manage all your tasks in one place</p>
+            <a href="/task.html" class="btn-primary">View Tasks</a>
+        </div>
+
+        <div class="dashboard-card">
+            <div class="icon">➕</div>
+            <h3>Add New Task</h3>
+            <p>Create a new task and track your progress</p>
+            <a href="/create-task.html" class="btn-primary">Create Task</a>
+        </div>
+
+        <div class="dashboard-card">
+            <div class="icon">👤</div>
+            <h3>Profile</h3>
+            <p>Manage your account settings and preferences</p>
+            <a href="#" class="btn-primary">View Profile</a>
+        </div>
+
+        <div class="dashboard-card">
+            <div class="icon">📊</div>
+            <h3>Dashboard</h3>
+            <p>View your productivity statistics and insights</p>
+            <a href="#" class="btn-primary">View Dashboard</a>
+        </div>
+    </div>
+</div>
+
+<!-- Hidden logout form -->
+<form id="logoutForm" action="/logout" method="post" style="display: none;">
+    <input type="hidden" name="_csrf" id="csrfToken">
+</form>
+
+<script>
+    // Function to get CSRF token from cookie
+    function getCsrfToken() {
+        const name = 'XSRF-TOKEN=';
+        const decodedCookie = decodeURIComponent(document.cookie);
+        const cookieArray = decodedCookie.split(';');
+        for(let i = 0; i < cookieArray.length; i++) {
+            let cookie = cookieArray[i].trim();
+            if (cookie.indexOf(name) === 0) {
+                return cookie.substring(name.length, cookie.length);
+            }
+        }
+        return null;
+    }
+
+    // Handle logout with CSRF token
+    function handleLogout() {
+        const csrfToken = getCsrfToken();
+        console.log('Logout CSRF Token:', csrfToken);
+
+        if (csrfToken) {
+            document.getElementById('csrfToken').value = csrfToken;
+            document.getElementById('logoutForm').submit();
+        } else {
+            // If no CSRF token in cookie, try direct form submission
+            console.warn('No CSRF token found, attempting logout anyway');
+
+            // Create form with CSRF fetched from server
+            fetch('/api/csrf-token')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('csrfToken').value = data.token;
+                    document.getElementById('logoutForm').submit();
+                })
+                .catch(error => {
+                    console.error('Error fetching CSRF token:', error);
+                    alert('Unable to logout. Please refresh the page and try again.');
+                });
+        }
+    }
+
+    // Set CSRF token when page loads
+    window.addEventListener('DOMContentLoaded', function() {
+        const csrfToken = getCsrfToken();
+        if (csrfToken) {
+            document.getElementById('csrfToken').value = csrfToken;
+            console.log('CSRF token loaded for logout');
+        } else {
+            console.warn('CSRF token not found on page load');
+        }
+    });
+</script>
+</body>
+</html>
